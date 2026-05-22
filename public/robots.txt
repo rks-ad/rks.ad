@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://www.rks.ad/sitemap.xml
+
+# Google-specific
+User-agent: Googlebot
+Allow: /
+
+# Bing-specific
+User-agent: Bingbot
+Allow: /
