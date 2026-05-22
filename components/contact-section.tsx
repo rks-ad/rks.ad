@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { MapPin, Mail, Clock, Linkedin, ExternalLink, Send, Loader2, CheckCircle, Upload, X } from "lucide-react"
+import { MapPin, Mail, Clock, Linkedin, ExternalLink, Send, Loader2, CheckCircle, Upload, X, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,51 +15,77 @@ export function ContactSection() {
     subject: "",
     message: "",
   })
-  const [files, setFiles] = useState<File[]>([])
+  
+  const [otp, setOtp] = useState("")
+  const [otpSent, setOtpSent] = useState(false)
+  const [isRequestingOtp, setIsRequestingOtp] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState("")
+  const [infoMessage, setInfoMessage] = useState("")
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || [])
-    const newFiles = [...files, ...selectedFiles].slice(0, 5)
-    setFiles(newFiles)
+  // 1. Trigger the verification OTP email
+  const handleRequestOtp = async () => {
+    if (!formData.email) {
+      setError("Please input a valid email address first.")
+      return
+    }
+    setIsRequestingOtp(true)
+    setError("")
+    setInfoMessage("")
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "request-otp", email: formData.email }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setOtpSent(true)
+        setInfoMessage("Verification code sent to your inbox.")
+      } else {
+        setError(data.error || "Failed to deliver validation code.")
+      }
+    } catch {
+      setError("Network connectivity problem. Try again.")
+    } finally {
+      setIsRequestingOtp(false)
+    }
   }
 
-  const removeFile = (index: number) => {
-    setFiles(files.filter((_, i) => i !== index))
-  }
-
+  // 2. Final Submit (Verifies OTP + delivers lead payload)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!otp) {
+      setError("Please input the 6-digit verification code.")
+      return
+    }
     setIsSubmitting(true)
     setError("")
+    setInfoMessage("")
 
     try {
-      const formDataToSend = new FormData()
-      formDataToSend.append("name", formData.name)
-      formDataToSend.append("email", formData.email)
-      formDataToSend.append("phone", formData.phone)
-      formDataToSend.append("subject", formData.subject)
-      formDataToSend.append("message", formData.message)
-      
-      files.forEach((file) => {
-        formDataToSend.append("files", file)
-      })
-
-      const response = await fetch("/api/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
-        body: formDataToSend,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "submit-form",
+          email: formData.email,
+          name: formData.name,
+          otp: otp,
+          message: `Phone: ${formData.phone || "N/A"}\nSubject: ${formData.subject || "N/A"}\n\nMessage:\n${formData.message}`,
+        }),
       })
 
-      const data = await response.json()
+      const data = await res.json()
 
       if (data.success) {
         setIsSubmitted(true)
         setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
-        setFiles([])
+        setOtp("")
+        setOtpSent(false)
       } else {
-        setError(data.error || "Failed to submit form")
+        setError(data.error || "Verification checkpoint failed.")
       }
     } catch {
       setError("Network error. Please try again.")
@@ -218,9 +244,9 @@ export function ContactSection() {
                 <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 text-green-500" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">Message Sent!</h3>
-                <p className="text-muted-foreground mb-6">
-                  We will get back to you within 24-48 hours.
+                <h3 className="text-xl font-bold text-foreground mb-2">Inquiry Confirmed!</h3>
+                <p className="text-muted-foreground mb-6 text-sm">
+                  Your verification was successful. A branded confirmation copy has been generated and dropped into your inbox via mails.rks.ad.
                 </p>
                 <Button
                   variant="outline"
@@ -239,148 +265,3 @@ export function ContactSection() {
                       <Input
                         id="name"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Your name"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="your@email.com"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="+91 XXXXX XXXXX"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="subject">Subject</Label>
-                      <Input
-                        id="subject"
-                        value={formData.subject}
-                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        placeholder="How can we help?"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Message *</Label>
-                    <textarea
-                      id="message"
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Describe your legal matter..."
-                      required
-                      rows={5}
-                      className="w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none"
-                    />
-                  </div>
-
-                  {/* File Upload */}
-                  <div className="space-y-2">
-                    <Label htmlFor="files">Attach Documents (Optional) - Max 5 files</Label>
-                    <div className="relative">
-                      <input
-                        id="files"
-                        type="file"
-                        multiple
-                        onChange={handleFileChange}
-                        className="hidden"
-                        accept="*"
-                      />
-                      <label
-                        htmlFor="files"
-                        className="flex items-center justify-center gap-2 w-full px-4 py-6 border-2 border-dashed border-input hover:border-gold/50 rounded-lg cursor-pointer transition-colors bg-muted/30 hover:bg-muted/50"
-                      >
-                        <Upload className="w-5 h-5 text-gold" />
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Drop files here or click to upload</p>
-                          <p className="text-xs text-muted-foreground">Any format, up to 5 files</p>
-                        </div>
-                      </label>
-                    </div>
-
-                    {/* File List */}
-                    {files.length > 0 && (
-                      <div className="space-y-2 mt-4">
-                        <p className="text-sm font-medium text-foreground">Attached Files ({files.length}/5)</p>
-                        <div className="space-y-2">
-                          {files.map((file, index) => (
-                            <motion.div
-                              key={index}
-                              initial={{ opacity: 0, y: -10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-input"
-                            >
-                              <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <Upload className="w-4 h-4 text-gold flex-shrink-0" />
-                                <div className="min-w-0">
-                                  <p className="text-sm text-foreground truncate">{file.name}</p>
-                                  <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                </div>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => removeFile(index)}
-                                className="p-1 hover:bg-red-500/10 rounded text-red-500 transition-colors flex-shrink-0"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {error && (
-                    <p className="text-red-500 text-sm">{error}</p>
-                  )}
-
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-gold hover:bg-gold-dark text-foreground font-semibold py-6"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" />
-                        Send Message
-                      </>
-                    )}
-                  </Button>
-
-                  <p className="text-xs text-muted-foreground text-center">
-                    By submitting this form, you agree to our{" "}
-                    <a href="/privacy-policy" className="text-gold hover:underline">Privacy Policy</a>
-                  </p>
-                </form>
-              </>
-            )}
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  )
-}
