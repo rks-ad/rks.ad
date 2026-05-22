@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { MapPin, Mail, Clock, Linkedin, ExternalLink, Send, Loader2, CheckCircle, Upload, X, ShieldCheck } from "lucide-react"
+import { MapPin, Mail, Clock, Linkedin, ExternalLink, Send, Loader2, CheckCircle, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,7 +24,6 @@ export function ContactSection() {
   const [error, setError] = useState("")
   const [infoMessage, setInfoMessage] = useState("")
 
-  // 1. Trigger the verification OTP email
   const handleRequestOtp = async () => {
     if (!formData.email) {
       setError("Please input a valid email address first.")
@@ -53,7 +52,6 @@ export function ContactSection() {
     }
   }
 
-  // 2. Final Submit (Verifies OTP + delivers lead payload)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!otp) {
@@ -97,34 +95,26 @@ export function ContactSection() {
   return (
     <section id="contact" className="py-24 bg-secondary/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="text-gold font-semibold text-sm uppercase tracking-wider">
-            Get in Touch
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-4 mb-4">
-            Contact Us
-          </h2>
+          <span className="text-gold font-semibold text-sm uppercase tracking-wider">Get in Touch</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-4 mb-4">Contact Us</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Ready to discuss your legal needs? Reach out to us and schedule a consultation 
-            with our experienced legal team.
+            Ready to discuss your legal needs? Reach out to us and schedule a consultation with our experienced legal team.
           </p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="space-y-6"
           >
-            {/* Office Address */}
             <div className="bg-card p-6 rounded-2xl border border-border">
               <div className="flex gap-4">
                 <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -141,7 +131,6 @@ export function ContactSection() {
               </div>
             </div>
 
-            {/* Email */}
             <div className="bg-card p-6 rounded-2xl border border-border">
               <div className="flex gap-4">
                 <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -149,20 +138,12 @@ export function ContactSection() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground mb-2">Email Us</h3>
-                  <a 
-                    href="mailto:iam@rks.ad" 
-                    className="text-gold hover:text-gold-dark transition-colors"
-                  >
-                    iam@rks.ad
-                  </a>
-                  <p className="text-muted-foreground text-sm mt-1">
-                    We respond within 24 hours
-                  </p>
+                  <a href="mailto:iam@rks.ad" className="text-gold hover:text-gold-dark transition-colors">iam@rks.ad</a>
+                  <p className="text-muted-foreground text-sm mt-1">We respond within 24 hours</p>
                 </div>
               </div>
             </div>
 
-            {/* Working Hours */}
             <div className="bg-card p-6 rounded-2xl border border-border">
               <div className="flex gap-4">
                 <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -178,57 +159,17 @@ export function ContactSection() {
               </div>
             </div>
 
-            {/* Social Links */}
             <div className="flex gap-4">
-              <a
-                href="https://linkedin.com/company/lawupin"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-card p-4 rounded-xl border border-border hover:border-gold/50 transition-colors group flex items-center justify-center gap-3"
-              >
+              <a href="https://linkedin.com/company/lawupin" target="_blank" rel="noopener noreferrer" className="flex-1 bg-card p-4 rounded-xl border border-border hover:border-gold/50 transition-colors group flex items-center justify-center gap-3">
                 <Linkedin className="w-5 h-5 text-gold" />
                 <span className="font-medium text-foreground">LinkedIn</span>
-                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-gold transition-colors" />
               </a>
-              <a
-                href="https://lawup.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 bg-card p-4 rounded-xl border border-border hover:border-gold/50 transition-colors group flex items-center justify-center gap-3"
-              >
-                <ExternalLink className="w-5 h-5 text-gold" />
+              <a href="https://lawup.in" target="_blank" rel="noopener noreferrer" className="flex-1 bg-card p-4 rounded-xl border border-border hover:border-gold/50 transition-colors group flex items-center justify-center gap-3">
                 <span className="font-medium text-foreground">lawup.in</span>
               </a>
             </div>
-
-            {/* Book Now CTA */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-primary p-6 rounded-2xl text-center"
-            >
-              <h3 className="text-xl font-bold text-primary-foreground mb-2">
-                Schedule Your Consultation
-              </h3>
-              <p className="text-primary-foreground/80 text-sm mb-4">
-                First consultation at 50% off for new clients
-              </p>
-              <a
-                href="https://cal.id/lawup"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button
-                  className="bg-gold hover:bg-gold-dark text-foreground font-bold px-8"
-                >
-                  Book Now
-                </Button>
-              </a>
-            </motion.div>
           </motion.div>
 
-          {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -236,24 +177,15 @@ export function ContactSection() {
             className="bg-card p-8 rounded-2xl border border-border"
           >
             {isSubmitted ? (
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="text-center py-12"
-              >
+              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center py-12">
                 <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 text-green-500" />
                 </div>
                 <h3 className="text-xl font-bold text-foreground mb-2">Inquiry Confirmed!</h3>
                 <p className="text-muted-foreground mb-6 text-sm">
-                  Your verification was successful. A branded confirmation copy has been generated and dropped into your inbox via mails.rks.ad.
+                  Your verification was successful. A confirmation routing notice has been generated to your email address via mails.rks.ad.
                 </p>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsSubmitted(false)}
-                >
-                  Send Another Message
-                </Button>
+                <Button variant="outline" onClick={() => setIsSubmitted(false)}>Send Another Message</Button>
               </motion.div>
             ) : (
               <>
@@ -262,6 +194,61 @@ export function ContactSection() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
+                      <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Your name" required />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email *</Label>
+                      <div className="flex gap-2">
+                        <Input id="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="your@email.com" required className="flex-1" />
+                        <Button type="button" onClick={handleRequestOtp} disabled={isRequestingOtp} className="bg-slate-900 text-white hover:bg-slate-800 text-xs px-3 h-10 flex-shrink-0">
+                          {isRequestingOtp ? <Loader2 className="w-3 h-3 animate-spin" /> : otpSent ? "Resend" : "Send OTP"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {otpSent && (
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-2 p-3 bg-amber-50/40 rounded-xl border border-amber-200">
+                      <Label htmlFor="otp" className="text-amber-800 flex items-center gap-1.5 font-semibold text-xs">
+                        <ShieldCheck className="w-4 h-4 text-amber-600" /> Confirm One-Time Password *
+                      </Label>
+                      <Input id="otp" type="text" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="6-Digit Code" required className="font-mono tracking-widest text-center text-lg bg-white border-amber-300 focus-visible:ring-amber-500" />
+                    </motion.div>
+                  )}
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input id="phone" type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+91 XXXXX XXXXX" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="subject">Subject</Label>
+                      <Input id="subject" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} placeholder="How can we help?" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Message *</Label>
+                    <textarea id="message" value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="Describe your legal matter..." required rows={5} className="w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold/50 resize-none text-sm" />
+                  </div>
+
+                  {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
+                  {infoMessage && <p className="text-emerald-600 text-sm font-medium">{infoMessage}</p>}
+
+                  <Button type="submit" disabled={isSubmitting || !otpSent} className={`w-full font-semibold py-6 transition-all duration-200 ${otpSent ? "bg-gold hover:bg-gold-dark text-foreground cursor-pointer" : "bg-slate-200 text-slate-400 cursor-not-allowed"}`}>
+                    {isSubmitting ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Verifying Submission...</>
+                    ) : (
+                      <><Send className="w-4 h-4 mr-2" />Verify & Send Message</>
+                    )}
+                  </Button>
+                </form>
+              </>
+            )}
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  )
+}
