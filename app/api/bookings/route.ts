@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { executeInsert } from "@/lib/oracle"
 
+export const runtime = 'edge'
+
 function generateId(): string {
   return crypto.randomUUID()
 }
